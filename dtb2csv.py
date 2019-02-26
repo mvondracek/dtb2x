@@ -11,7 +11,7 @@ from typing import List, TextIO, Union
 import coloredlogs
 
 PROGRAM_NAME = 'dtb2csv'
-PROGRAM_DESCRIPTION = 'Simple single-purpose and easy to use dtb to csv data format converter'
+PROGRAM_DESCRIPTION = 'Simple single-purpose DTB to CSV format converter.'
 __version__ = '0.1.0'
 __author__ = 'Martin Vondracek'
 __email__ = 'vondracek.mar@gmail.com'
