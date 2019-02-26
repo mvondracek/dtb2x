@@ -290,7 +290,6 @@ if __name__ == '__main__':
     try:
         exit_code = main()
     except KeyboardInterrupt:
-        print('Stopping.')
         logger.warning('received KeyboardInterrupt, stopping')
         sys.exit(ExitCode.KEYBOARD_INTERRUPT.value)
     else:
