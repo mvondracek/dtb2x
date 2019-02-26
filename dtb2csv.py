@@ -36,12 +36,6 @@ class ExitCode(Enum):
     ARGUMENTS = 2
     """Incorrect or missing arguments provided."""
 
-    EX_UNAVAILABLE = 69
-    """Required program or file does not exist."""
-
-    EX_NOPERM = 77
-    """Permission denied."""
-
     KEYBOARD_INTERRUPT = 130
     """Program received SIGINT."""
 
