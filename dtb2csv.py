@@ -294,4 +294,4 @@ if __name__ == '__main__':
         logger.warning('received KeyboardInterrupt, stopping')
         sys.exit(ExitCode.KEYBOARD_INTERRUPT.value)
     else:
-        sys.exit(exit_code)
+        sys.exit(exit_code.value)
