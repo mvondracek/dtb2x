@@ -2,10 +2,14 @@
 import argparse
 import csv
 import logging
+import os
 import re
 import sys
+import tkinter as tk
 import warnings
 from enum import Enum, unique
+from tkinter.filedialog import askopenfilename
+from tkinter.messagebox import showerror
 from typing import List, TextIO, Union
 
 PROGRAM_NAME = 'dtb2csv'
@@ -159,6 +163,110 @@ def convert(dtb_input: TextIO, csv_output: TextIO):
             writer.writerow(entity.to_list())
 
 
+class Application:
+    def __init__(self):
+        self.root = tk.Tk()
+
+        self.input_dtb_filepath = tk.StringVar()
+        self.output_csv_filepath = tk.StringVar()
+
+        self.root.title(PROGRAM_NAME)
+
+        menu = tk.Menu(self.root)
+        file_menu = tk.Menu(menu)
+        file_menu.add_command(label="Select input DTB file...", command=self.ask_input_dtb_filepath)
+        file_menu.add_command(label="Convert", command=self.convert)
+        file_menu.add_separator()
+        file_menu.add_command(label="Quit", command=self.root.quit)
+        menu.add_cascade(label="File", menu=file_menu)
+        help_menu = tk.Menu(menu)
+        help_menu.add_command(label="About " + PROGRAM_NAME, command=self.about)
+        menu.add_cascade(label="Help", menu=help_menu)
+        self.root.config(menu=menu)
+
+        tk.Label(self.root, text="Input DTB file:").grid(row=0, column=0)
+        tk.Entry(self.root, textvariable=self.input_dtb_filepath).grid(row=0, column=1)
+        tk.Button(self.root, text='Browse...', command=self.ask_input_dtb_filepath).grid(row=0, column=2)
+
+        tk.Button(self.root, text='Convert', command=self.convert).grid(row=2, column=0, columnspan=3)
+
+    def ask_input_dtb_filepath(self):
+        input_filepath = tk.filedialog.askopenfilename(
+            title='Open DTB file',
+            filetypes=(("DTB files", "*.dtb"), ("all files", "*.*"))
+        )
+        logger.debug('Selected input DTB filepath `{}`'.format(input_filepath))
+        self.input_dtb_filepath.set(input_filepath)
+
+    def ask_output_csv_filepath(self):
+        input_filepath = self.input_dtb_filepath.get()
+        if input_filepath:
+            initial_file = os.path.splitext(os.path.basename(input_filepath))[0]
+        else:
+            initial_file = ''
+
+        output_filepath = tk.filedialog.asksaveasfilename(
+            title='Save CSV file',
+            filetypes=(("CSV files", "*.csv"), ("all files", "*.*")),
+            defaultextension='.csv',
+            initialfile=initial_file
+        )
+        logger.debug('Selected output CSV filepath `{}`'.format(output_filepath))
+        self.output_csv_filepath.set(output_filepath)
+
+    def convert(self):
+        # form validation - input file
+        input_filepath = self.input_dtb_filepath.get()
+        if not input_filepath:
+            logger.warning('No input DTB file selected.')
+            tk.messagebox.showwarning('OK', 'Please select input DTB file first.')
+            return
+        if not os.path.isfile(input_filepath):
+            warning_message = 'Selected input DTB file `{}` does not exist.'.format(input_filepath)
+            logger.warning(warning_message)
+            tk.messagebox.showwarning('OK', warning_message)
+            return
+
+        # output file
+        self.ask_output_csv_filepath()
+        output_filepath = self.output_csv_filepath.get()
+        if not output_filepath:
+            return  # user canceled `asksaveasfilename` dialog
+
+        try:
+            with open(input_filepath, mode='r') as dtb_file, \
+                    open(output_filepath, mode='w') as csv_file:
+                logger.info('Conversion started. input DTB = `{}`, output CSV = `{}`'
+                            .format(input_filepath, output_filepath))
+                convert(dtb_file, csv_file)
+
+        except FileNotFoundError as e:
+            logger.error(e)
+            tk.messagebox.showerror("File Not Found Error", '{}: `{}`.'.format(e.strerror, e.filename))
+        except OSError as e:
+            logger.error(e)
+            tk.messagebox.showerror("OS Error", e.strerror)
+        except DtbReader.InvalidDtbFileError as e:
+            logger.error(e)
+            tk.messagebox.showerror("Error", e.message)
+        else:
+            message = 'Conversion finished! CSV file saved to `{}`.'.format(self.output_csv_filepath.get())
+            logger.info(message)
+            tk.messagebox.showinfo('Success', message)
+
+    @staticmethod
+    def about():
+        logger.debug('About window shown.')
+        tk.messagebox.showinfo('About ' + PROGRAM_NAME,
+                               PROGRAM_NAME + ' ' + __version__ + '\n' +
+                               PROGRAM_DESCRIPTION + '\n\n' +
+                               'Author: ' + __author__ + ', ' + __email__)
+
+    def mainloop(self):
+        logger.debug('Main window shown. (mainloop)')
+        self.root.mainloop()
+
+
 def main() -> ExitCode:
     logging.captureWarnings(True)
     warnings.simplefilter('always', ResourceWarning)
@@ -170,26 +278,10 @@ def main() -> ExitCode:
         epilog=__author__ + ', ' + __email__ + ', 2019.'
     )
     parser.add_argument('-v', '--version', action='version', version='%(prog)s {}'.format(__version__))
-    parser.add_argument('-i', '--input',
-                        type=argparse.FileType('r'),
-                        help='input DTB file',
-                        metavar='FILE',
-                        default=sys.stdin
-                        )
-    parser.add_argument('-o', '--output',
-                        type=argparse.FileType('w'),
-                        help='output CSV file',
-                        metavar='FILE',
-                        default=sys.stdout
-                        )
-    config = parser.parse_args()
-    logger.debug('parsed arguments: {}'.format(config))
+    parser.parse_args()
 
-    try:
-        convert(config.input, config.output)
-    finally:
-        config.input.close()
-        config.output.close()
+    app = Application()
+    app.mainloop()
 
     return ExitCode.EX_OK
 
