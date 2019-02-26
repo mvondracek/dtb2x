@@ -8,8 +8,6 @@ import warnings
 from enum import Enum, unique
 from typing import List, TextIO, Union
 
-import coloredlogs
-
 PROGRAM_NAME = 'dtb2csv'
 PROGRAM_DESCRIPTION = 'Simple single-purpose DTB to CSV format converter.'
 __version__ = '0.1.0'
@@ -163,7 +161,7 @@ def convert(dtb_input: TextIO, csv_output: TextIO):
 def main() -> ExitCode:
     logging.captureWarnings(True)
     warnings.simplefilter('always', ResourceWarning)
-    coloredlogs.install(level=logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
 
     parser = argparse.ArgumentParser(
         prog=PROGRAM_NAME,
