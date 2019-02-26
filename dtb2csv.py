@@ -270,7 +270,7 @@ class Application:
 def main() -> ExitCode:
     logging.captureWarnings(True)
     warnings.simplefilter('always', ResourceWarning)
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(filename='debug.log', filemode='w', level=logging.DEBUG)
 
     parser = argparse.ArgumentParser(
         prog=PROGRAM_NAME,
