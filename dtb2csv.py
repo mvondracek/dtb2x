@@ -21,6 +21,7 @@ logger = logging.getLogger(__name__)
 
 class Dtb2CsvError(Exception):
     """Base class for exceptions in dtb2csv module."""
+
     def __init__(self, message):
         self.message = message
 
@@ -42,6 +43,7 @@ class ExitCode(Enum):
 
 class Group:
     """Group contains teams. Group is a top level record in DTB file. """
+
     def __init__(self, name: str, note: str):
         self.name = name
         self.note = note
@@ -55,6 +57,7 @@ class Group:
 
 class Team:
     """Team belongs to a single group and contains players."""
+
     def __init__(self, name: str, note: str, group: Group):
         self.name = name
         self.note = note
@@ -69,6 +72,7 @@ class Team:
 
 class Player:
     """Player belongs to a single team."""
+
     def __init__(self, registration_number: str, name: str, surname: str, date_of_birth: str, note: str, team: Team):
         # TODO MV: In case we would like to do some validations, `registration_number` could be int and `date_of_birth`
         # could be datetime.date.
