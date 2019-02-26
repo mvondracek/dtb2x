@@ -202,14 +202,17 @@ class Application:
         input_filepath = self.input_dtb_filepath.get()
         if input_filepath:
             initial_file = os.path.splitext(os.path.basename(input_filepath))[0]
+            initial_directory = os.path.dirname(input_filepath)
         else:
             initial_file = ''
+            initial_directory = ''
 
         output_filepath = tk.filedialog.asksaveasfilename(
             title='Save CSV file',
             filetypes=(("CSV files", "*.csv"), ("all files", "*.*")),
             defaultextension='.csv',
-            initialfile=initial_file
+            initialfile=initial_file,
+            initialdir=initial_directory
         )
         logger.debug('Selected output CSV filepath `{}`'.format(output_filepath))
         self.output_csv_filepath.set(output_filepath)
