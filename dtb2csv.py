@@ -145,7 +145,8 @@ class DtbReader:
         raise DtbReader.InvalidDtbFileError(error_message)
 
     class InvalidDtbFileError(Dtb2CsvError):
-        pass
+        def __repr__(self):
+            return 'DtbReader.InvalidDtbFileError({})'.format(self.message)
 
 
 def convert(dtb_input: TextIO, csv_output: TextIO):
