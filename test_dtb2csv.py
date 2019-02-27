@@ -27,6 +27,31 @@ class TestDtbReader(TestCase):
         self.assertEqual('player_note', player.note)
         self.assertEqual(team, player.team)
 
+    def test_group_strip_whitespace(self):
+        group = self.reader.read('group_name - group_note     \n')
+        self.assertEqual('group_name', group.name)
+        self.assertEqual('group_note     ', group.note)
+
+        group = self.reader.read('group_name -     group_note\n')
+        self.assertEqual('group_name', group.name)
+        self.assertEqual('    group_note', group.note)
+
+        group = self.reader.read('group_name -     group_note     \n')
+        self.assertEqual('group_name', group.name)
+        self.assertEqual('    group_note     ', group.note)
+
+        group = self.reader.read('group_name     - group_note\n')
+        self.assertEqual('group_name    ', group.name)
+        self.assertEqual('group_note', group.note)
+
+        group = self.reader.read('group_name     - group_note     \n')
+        self.assertEqual('group_name    ', group.name)
+        self.assertEqual('group_note     ', group.note)
+
+        group = self.reader.read('group_name     -     group_note     \n')
+        self.assertEqual('group_name    ', group.name)
+        self.assertEqual('    group_note     ', group.note)
+
     def test_read_more_players(self):
         group = self.reader.read('group_name - group_note\n')
         team = self.reader.read('	team_name - team_note\n')
