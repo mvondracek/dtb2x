@@ -91,6 +91,26 @@ class TestConvert(TestCase):
         convert(input_file, output_file)
         self.assertEqual(output_expected, output_file.getvalue())
 
+    def test_loose_no_strict(self):
+        input_file = io.StringIO(
+            'group_name -\n' +
+            '	team_name -\n' +
+            '		123456789 - player_surname1 player_name1, 01.01.1900 ,\n' +
+            '		123456789 - player_surname2 player_name2, 01.01.1900     ,\n' +
+            '		- player_surname3 player_name3 \n' +
+            '		- player_surname4 player_name4, , \n',
+            newline=None)
+        output_expected = (
+            'group_name;\n'
+            'group_name;;team_name;\n'
+            'group_name;;team_name;;123456789;player_name1;player_surname1;01.01.1900;\n'
+            'group_name;;team_name;;123456789;player_name2;player_surname2;01.01.1900;\n'
+            'group_name;;team_name;;;player_name3;player_surname3;;\n'
+            'group_name;;team_name;;;player_name4;player_surname4;;\n')
+        output_file = io.StringIO(newline=None)
+        convert(input_file, output_file, strict=False)
+        self.assertEqual(output_expected, output_file.getvalue())
+
     def test_basic_surname(self):
         input_file = io.StringIO(
             'group_name - \n'
