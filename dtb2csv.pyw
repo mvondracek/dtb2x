@@ -308,15 +308,6 @@ def main() -> ExitCode:
     warnings.simplefilter('always', ResourceWarning)
     logging.basicConfig(filename='debug.log', filemode='w', level=logging.DEBUG)
 
-    # # NOTE: Console window is hidden via PYW file extension, argument parsing is not used for now.
-    # parser = argparse.ArgumentParser(
-    #     prog=PROGRAM_NAME,
-    #     description=PROGRAM_DESCRIPTION,
-    #     epilog=__author__ + ', ' + __email__ + ', 2019.'
-    # )
-    # parser.add_argument('-v', '--version', action='version', version='%(prog)s {}'.format(__version__))
-    # parser.parse_args()
-
     app = Application()
     app.mainloop()
 
