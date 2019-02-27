@@ -91,7 +91,35 @@ class TestConvert(TestCase):
         convert(input_file, output_file)
         self.assertEqual(output_expected, output_file.getvalue())
 
-    def test_basic(self):
+    def test_basic_surname(self):
+        input_file = io.StringIO(
+            'group_name - \n'
+            '	team_name - \n'
+            '		-  player_name,  , \n',
+            newline=None)
+        output_expected = (
+            'group_name;\n'
+            'group_name;;team_name;\n'
+            'group_name;;team_name;;;player_name;;;\n')
+        output_file = io.StringIO(newline=None)
+        convert(input_file, output_file)
+        self.assertEqual(output_expected, output_file.getvalue())
+
+    def test_basic_surname_name(self):
+        input_file = io.StringIO(
+            'group_name - \n'
+            '	team_name - \n'
+            '		- player_surname player_name,  , \n',
+            newline=None)
+        output_expected = (
+            'group_name;\n'
+            'group_name;;team_name;\n'
+            'group_name;;team_name;;;player_name;player_surname;;\n')
+        output_file = io.StringIO(newline=None)
+        convert(input_file, output_file)
+        self.assertEqual(output_expected, output_file.getvalue())
+
+    def test_basic_name(self):
         input_file = io.StringIO(
             'group_name - \n'
             '	team_name - \n'
