@@ -109,8 +109,8 @@ class DtbReader:
         r'^\t\t((?P<registration_number>\d*) )?- (?P<surname>[^ ,]+)? (?P<name>[^,]+)?, (?P<date_of_birth>[\d.]+)?'
         r' +, (?P<note>.+)?\n$')
     PLAYER_RE_LOOSE = re.compile(
-        r'^\t\t((?P<registration_number>\d*) )?- (?P<surname>[^ ,]+)? (?P<name>[^,]+)?, ?(?P<date_of_birth>[\d.]+)?'
-        r' +, ?(?P<note>.+)?\n$')
+        r'^\t\t((?P<registration_number>\d*) )?- (?P<surname>[^ ,]+)? (?P<name>[^,]+)?,? ?(?P<date_of_birth>[\d.]+)?'
+        r' +,? ?(?P<note>.+)?\n$')
 
     def __init__(self):
         self.current_group = None  # type:Group
