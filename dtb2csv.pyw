@@ -197,7 +197,7 @@ class Application:
         help_menu = tk.Menu(menu)
         help_menu.add_command(label="About " + PROGRAM_NAME, command=self.about)
         menu.add_cascade(label="Help", menu=help_menu)
-        self.root.config(menu=menu)
+        self.root.config(menu=menu, pady=5, padx=5)
 
         tk.Label(self.root, text="Input DTB file:").grid(row=0, column=0)
         tk.Entry(self.root, textvariable=self.input_dtb_filepath).grid(row=0, column=1)
