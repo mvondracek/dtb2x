@@ -16,6 +16,7 @@ PROGRAM_DESCRIPTION = 'Simple single-purpose DTB to CSV format converter.'
 __version__ = '0.1.0'
 __author__ = 'Martin Vondracek'
 __email__ = 'vondracek.mar@gmail.com'
+__date__ = '2019-02-27'
 
 logger = logging.getLogger(__name__)
 
@@ -296,7 +297,8 @@ class Application:
         tk.messagebox.showinfo('About ' + PROGRAM_NAME,
                                PROGRAM_NAME + ' ' + __version__ + '\n' +
                                PROGRAM_DESCRIPTION + '\n\n' +
-                               'Author: ' + __author__ + ', ' + __email__)
+                               'Author: ' + __author__ + ', ' + __email__ + '\n' +
+                               __date__)
 
     def mainloop(self):
         logger.debug('Main window shown. (mainloop)')
