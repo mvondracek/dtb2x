@@ -167,6 +167,11 @@ class DtbReader:
 
 
 def convert(dtb_input: TextIO, csv_output: TextIO, strict: bool = True):
+    """
+    :param dtb_input: Input text file in DTB format
+    :param csv_output: Output text file in CSV format.
+        CSV file should be opened with <code>newline=''</code>, see https://docs.python.org/3.5/library/csv.html#id3
+    """
     reader = DtbReader()
     # NOTE MV: Microsoft Excel expects delimiter based on regional settings
     writer = csv.writer(csv_output, dialect=csv.excel, delimiter=';')
@@ -256,7 +261,9 @@ class Application:
 
         try:
             with open(input_filepath, mode='r') as dtb_file, \
-                    open(output_filepath, mode='w') as csv_file:
+                    open(output_filepath, mode='w', newline='') as csv_file:
+                # NOTE: CSV file is opened with `newline=''` to prevent line ends in form `\r\r\n`
+                # see https://docs.python.org/3.5/library/csv.html#id3
                 strict = self.dtb_strict_mode.get()
                 logger.info('Conversion started. input DTB = `{}`, output CSV = `{}`, strict = {}'
                             .format(input_filepath, output_filepath, strict))
