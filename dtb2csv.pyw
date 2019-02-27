@@ -192,6 +192,7 @@ class Application:
         self.dtb_strict_mode.set(True)
 
         self.root.title(PROGRAM_NAME)
+        self.root.resizable(False, False)
 
         menu = tk.Menu(self.root)
         file_menu = tk.Menu(menu)
@@ -213,6 +214,15 @@ class Application:
                        variable=self.dtb_strict_mode).grid(row=1, column=0, columnspan=3)
 
         tk.Button(self.root, text='Convert', command=self.convert).grid(row=2, column=0, columnspan=3)
+        self.center_window()
+
+    def center_window(self):
+        self.root.update_idletasks()
+        window_width = self.root.winfo_width()
+        window_height = self.root.winfo_height()
+        x_position = (self.root.winfo_screenwidth() // 2) - (window_width // 2)
+        y_position = (self.root.winfo_screenheight() // 2) - (window_height // 2)
+        self.root.geometry('{}x{}+{}+{}'.format(window_width, window_height, x_position, y_position))
 
     def ask_input_dtb_filepath(self):
         input_filepath = tk.filedialog.askopenfilename(
