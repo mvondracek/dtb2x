@@ -200,7 +200,7 @@ class Application:
         self.root.config(menu=menu, pady=5, padx=5)
 
         tk.Label(self.root, text="Input DTB file:").grid(row=0, column=0)
-        tk.Entry(self.root, textvariable=self.input_dtb_filepath).grid(row=0, column=1)
+        tk.Entry(self.root, textvariable=self.input_dtb_filepath, width=40).grid(row=0, column=1)
         tk.Button(self.root, text='Browse...', command=self.ask_input_dtb_filepath).grid(row=0, column=2)
 
         tk.Checkbutton(self.root, text="DTB strict mode",
