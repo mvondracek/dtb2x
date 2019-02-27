@@ -101,18 +101,32 @@ class Player:
 
 class DtbReader:
     # Spaces in the beginning of `name` and `registration_number` are discarded
-    GROUP_RE = re.compile(r'^((?P<name>[^\t]*) )?- (?P<note>.+)?\n$')
-    TEAM_RE = re.compile(r'^\t((?P<name>[^\t]*) )?- (?P<note>.+)?\n$')
-    PLAYER_RE = re.compile(
-        r'^\t\t((?P<registration_number>[^\t]*) )?- (?P<surname>.+)? (?P<name>.+)?, (?P<date_of_birth>.+)?'
-        r' , (?P<note>.+)?\n$')
+    GROUP_RE_STRICT = re.compile(r'^((?P<name>[^\t]*) )?- (?P<note>.+)?\n$')
+    GROUP_RE_LOOSE = re.compile(r'^((?P<name>[^\t]*) )?- ?(?P<note>.+)?\n$')
+    TEAM_RE_STRICT = re.compile(r'^\t((?P<name>[^\t]*) )?- (?P<note>.+)?\n$')
+    TEAM_RE_LOOSE = re.compile(r'^\t((?P<name>[^\t]*) )?- ?(?P<note>.+)?\n$')
+    PLAYER_RE_STRICT = re.compile(
+        r'^\t\t((?P<registration_number>\d*) )?- (?P<surname>[^ ,]+)? (?P<name>[^,]+)?, (?P<date_of_birth>[\d.]+)?'
+        r' +, (?P<note>.+)?\n$')
+    PLAYER_RE_LOOSE = re.compile(
+        r'^\t\t((?P<registration_number>\d*) )?- (?P<surname>[^ ,]+)? (?P<name>[^,]+)?, ?(?P<date_of_birth>[\d.]+)?'
+        r' +, ?(?P<note>.+)?\n$')
 
     def __init__(self):
         self.current_group = None  # type:Group
         self.current_team = None  # type:Team
 
-    def read(self, line) -> Union[Group, Team, Player]:
-        group_match = self.GROUP_RE.fullmatch(line)
+    def read(self, line: str, strict: bool = True) -> Union[Group, Team, Player]:
+        if strict:
+            group_re = self.GROUP_RE_STRICT
+            team_re = self.TEAM_RE_STRICT
+            player_re = self.PLAYER_RE_STRICT
+        else:
+            group_re = self.GROUP_RE_LOOSE
+            team_re = self.TEAM_RE_LOOSE
+            player_re = self.PLAYER_RE_LOOSE
+
+        group_match = group_re.fullmatch(line)
         if group_match:
             group = Group(group_match.group('name'), group_match.group('note'))
             self.current_group = group
@@ -120,7 +134,7 @@ class DtbReader:
             logger.info('DtbReader: read Group={}'.format(group))
             return group
 
-        team_match = self.TEAM_RE.fullmatch(line)
+        team_match = team_re.fullmatch(line)
         if team_match:
             if self.current_group is None:
                 error_message = 'DtbReader: Team without Group:`{}`'.format(line)
@@ -131,7 +145,7 @@ class DtbReader:
             logger.info('DtbReader: read Team={}'.format(team))
             return team
 
-        player_match = self.PLAYER_RE.fullmatch(line)
+        player_match = player_re.fullmatch(line)
         if player_match:
             if self.current_team is None:
                 error_message = 'DtbReader: Player without team:`{}`'.format(line)
@@ -152,12 +166,12 @@ class DtbReader:
             return 'DtbReader.InvalidDtbFileError({})'.format(self.message)
 
 
-def convert(dtb_input: TextIO, csv_output: TextIO):
+def convert(dtb_input: TextIO, csv_output: TextIO, strict: bool = True):
     reader = DtbReader()
     # NOTE MV: Microsoft Excel expects delimiter based on regional settings
     writer = csv.writer(csv_output, dialect=csv.excel, delimiter=';')
     for line in dtb_input:
-        entity = reader.read(line)  # entity is Group, Team, or Player
+        entity = reader.read(line, strict=strict)  # entity is Group, Team, or Player
         if entity is not None:
             writer.writerow(entity.to_list())
 
@@ -168,6 +182,8 @@ class Application:
 
         self.input_dtb_filepath = tk.StringVar()
         self.output_csv_filepath = tk.StringVar()
+        self.dtb_strict_mode = tk.BooleanVar()
+        self.dtb_strict_mode.set(True)
 
         self.root.title(PROGRAM_NAME)
 
@@ -186,6 +202,9 @@ class Application:
         tk.Label(self.root, text="Input DTB file:").grid(row=0, column=0)
         tk.Entry(self.root, textvariable=self.input_dtb_filepath).grid(row=0, column=1)
         tk.Button(self.root, text='Browse...', command=self.ask_input_dtb_filepath).grid(row=0, column=2)
+
+        tk.Checkbutton(self.root, text="DTB strict mode",
+                       variable=self.dtb_strict_mode).grid(row=1, column=0, columnspan=3)
 
         tk.Button(self.root, text='Convert', command=self.convert).grid(row=2, column=0, columnspan=3)
 
@@ -238,9 +257,10 @@ class Application:
         try:
             with open(input_filepath, mode='r') as dtb_file, \
                     open(output_filepath, mode='w') as csv_file:
-                logger.info('Conversion started. input DTB = `{}`, output CSV = `{}`'
-                            .format(input_filepath, output_filepath))
-                convert(dtb_file, csv_file)
+                strict = self.dtb_strict_mode.get()
+                logger.info('Conversion started. input DTB = `{}`, output CSV = `{}`, strict = {}'
+                            .format(input_filepath, output_filepath, strict))
+                convert(dtb_file, csv_file, strict=strict)
 
         except FileNotFoundError as e:
             logger.error(e)
@@ -250,7 +270,10 @@ class Application:
             tk.messagebox.showerror("OS Error", e.strerror)
         except DtbReader.InvalidDtbFileError as e:
             logger.error(e)
-            tk.messagebox.showerror("Error", e.message)
+            message = e.message
+            if self.dtb_strict_mode:
+                message += '\n\nTry again without DTB strict mode.'
+            tk.messagebox.showerror("Error", message)
         else:
             message = 'Conversion finished! CSV file saved to `{}`.'.format(self.output_csv_filepath.get())
             logger.info(message)
