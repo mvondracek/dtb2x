@@ -268,6 +268,10 @@ class Application:
         except OSError as e:
             logger.error(e)
             tk.messagebox.showerror("OS Error", e.strerror)
+        except UnicodeError as e:
+            message = 'Cannot read file.\n\n{}: {}'.format(e.__class__.__name__, str(e))
+            logger.error(message)
+            tk.messagebox.showerror("Unicode Error", message)
         except DtbReader.InvalidDtbFileError as e:
             logger.error(e)
             message = e.message
