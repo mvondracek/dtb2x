@@ -13,7 +13,7 @@ from typing import List, TextIO, Union
 
 PROGRAM_NAME = 'dtb2csv'
 PROGRAM_DESCRIPTION = 'Simple single-purpose DTB to CSV format converter.'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 __author__ = 'Martin Vondracek'
 __email__ = 'vondracek.mar@gmail.com'
 __date__ = '2019-02-27'
@@ -118,6 +118,15 @@ class DtbReader:
         self.current_team = None  # type:Team
 
     def read(self, line: str, strict: bool = True) -> Union[Group, Team, Player]:
+        """
+        :param line: Single line of DTB file.
+        :param strict: Convert using strict mode for reading DTB file and validation of its format. When strict mode is
+        enabled, trying to convert DTB file containing format mistakes raises Exceptions. If strict mode is disabled,
+        the reader tries to tolerate small formatting mistakes like missing spaces and missing commas.
+        :return: Read DTB entity from DTB file.
+
+        :raises DtbReader.InvalidDtbFileError: If `line` is not a valid DTB entity, therefore the input file is invalid.
+        """
         if strict:
             group_re = self.GROUP_RE_STRICT
             team_re = self.TEAM_RE_STRICT
@@ -172,6 +181,11 @@ def convert(dtb_input: TextIO, csv_output: TextIO, strict: bool = True):
     :param dtb_input: Input text file in DTB format
     :param csv_output: Output text file in CSV format.
         CSV file should be opened with <code>newline=''</code>, see https://docs.python.org/3.5/library/csv.html#id3
+    :param strict: Convert using strict mode for reading DTB file and validation of its format. When strict mode is
+        enabled, trying to convert DTB file containing format mistakes raises Exceptions. If strict mode is disabled,
+        the reader tries to tolerate small formatting mistakes like missing spaces and missing commas.
+
+    :raises DtbReader.InvalidDtbFileError: If `line` is not a valid DTB entity, therefore the input file is invalid.
     """
     reader = DtbReader()
     # NOTE MV: Microsoft Excel expects delimiter based on regional settings
