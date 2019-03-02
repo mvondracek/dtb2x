@@ -1,8 +1,7 @@
-import csv
 import io
 from unittest import TestCase
 
-from dtb2csv import DtbReader, Group, Team, Player, convert, main
+from dtb2csv import DtbReader, convert
 
 
 class TestDtbReader(TestCase):
@@ -76,6 +75,12 @@ class TestDtbReader(TestCase):
 
 
 class TestConvert(TestCase):
+    def setUp(self):
+        self.CSV_HEADER = \
+            'Název, Oddíl;Poznámka, Oddíl;' \
+            'Název, Družstvo;Poznámka, Družstvo;' \
+            'Jméno, Hráč;Příjmení, Hráč;Datum nar., Hráč;Reg. číslo, Hráč;Poznámka, Hráč\n'
+
     def test_convert(self):
         input_file = io.StringIO(
             'group_name - group_note\n' +
@@ -83,6 +88,7 @@ class TestConvert(TestCase):
             '		123456789 - player_surname player_name, 01.01.1900 , player_note\n',
             newline=None)
         output_expected = (
+            self.CSV_HEADER +
             'group_name;group_note\n'
             'group_name;group_note;team_name;team_note\n'
             'group_name;group_note;team_name;team_note;123456789;player_name;player_surname;01.01.1900;'
@@ -101,6 +107,7 @@ class TestConvert(TestCase):
             '		- player_surname4 player_name4, , \n',
             newline=None)
         output_expected = (
+            self.CSV_HEADER +
             'group_name;\n'
             'group_name;;team_name;\n'
             'group_name;;team_name;;123456789;player_name1;player_surname1;01.01.1900;\n'
@@ -118,6 +125,7 @@ class TestConvert(TestCase):
             '		-  player_name,  , \n',
             newline=None)
         output_expected = (
+            self.CSV_HEADER +
             'group_name;\n'
             'group_name;;team_name;\n'
             'group_name;;team_name;;;player_name;;;\n')
@@ -132,6 +140,7 @@ class TestConvert(TestCase):
             '		- player_surname player_name,  , \n',
             newline=None)
         output_expected = (
+            self.CSV_HEADER +
             'group_name;\n'
             'group_name;;team_name;\n'
             'group_name;;team_name;;;player_name;player_surname;;\n')
@@ -146,6 +155,7 @@ class TestConvert(TestCase):
             '		-  player_name,  , \n',
             newline=None)
         output_expected = (
+            self.CSV_HEADER +
             'group_name;\n'
             'group_name;;team_name;\n'
             'group_name;;team_name;;;player_name;;;\n')
@@ -160,6 +170,7 @@ class TestConvert(TestCase):
             '		-  ,  , \n',
             newline=None)
         output_expected = (
+            self.CSV_HEADER +
             ';\n'
             ';;;\n'
             ';;;;;;;;\n')
@@ -177,6 +188,7 @@ class TestConvert(TestCase):
             '		123456789 - player_surname player_name, 01.01.2000 , player_note\n',
             newline=None)
         output_expected = (
+            self.CSV_HEADER +
             'group1;group_note\n'
             'group2;group_note\n'
             'group2;group_note;team2;team_note\n'
@@ -194,6 +206,7 @@ class TestConvert(TestCase):
             '		123456789 - player_surname player_name, 01.01.2000 , player_note\n',
             newline=None)
         output_expected = (
+            self.CSV_HEADER +
             'group_name;group_note\n'
             'group_name;group_note;team_name;team_note\n'
             'group_name;group_note;team_name;team_note;123456789;player_name;player_surname;01.01.2000;player_note\n')

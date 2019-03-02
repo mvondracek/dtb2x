@@ -56,6 +56,10 @@ class Group:
     def to_list(self) -> List:
         return [self.name, self.note]
 
+    @classmethod
+    def header(cls) -> List[str]:
+        return ['Název, Oddíl', 'Poznámka, Oddíl']
+
 
 class Team:
     """Team belongs to a single group and contains players."""
@@ -70,6 +74,10 @@ class Team:
 
     def to_list(self) -> List:
         return self.group.to_list() + [self.name, self.note]
+
+    @classmethod
+    def header(cls) -> List[str]:
+        return ['Název, Družstvo', 'Poznámka, Družstvo']
 
 
 class Player:
@@ -98,6 +106,10 @@ class Player:
             self.date_of_birth,
             self.note
         ]
+
+    @classmethod
+    def header(cls) -> List[str]:
+        return ['Reg. číslo, Hráč', 'Jméno, Hráč', 'Příjmení, Hráč', 'Datum nar., Hráč', 'Poznámka, Hráč']
 
 
 class DtbReader:
@@ -190,6 +202,8 @@ def convert(dtb_input: TextIO, csv_output: TextIO, strict: bool = True):
     reader = DtbReader()
     # NOTE MV: Microsoft Excel expects delimiter based on regional settings
     writer = csv.writer(csv_output, dialect=csv.excel, delimiter=';')
+    # write custom CSV header
+    writer.writerow(Group.header() + Team.header() + Player.header())
     for line in dtb_input:
         entity = reader.read(line, strict=strict)  # entity is Group, Team, or Player
         if entity is not None:
