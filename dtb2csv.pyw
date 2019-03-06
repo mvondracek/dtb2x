@@ -263,6 +263,7 @@ class ConverterXlsx(Converter):
         workbook = Workbook()
         worksheet = workbook.active  # grab the active worksheet
         worksheet.title = "DTB"
+        worksheet.freeze_panes = 'A2'
         # write custom header
         worksheet.append(Group.header() + Team.header() + Player.header())
         for line in dtb_input:
