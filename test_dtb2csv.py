@@ -26,6 +26,25 @@ class TestDtbReader(TestCase):
         self.assertEqual('player_note', player.note)
         self.assertEqual(team, player.team)
 
+    def test_player_registration_number_as_string(self):
+        group = self.reader.read('group_name - group_note\n')
+        self.assertEqual('group_name', group.name)
+        self.assertEqual('group_note', group.note)
+
+        team = self.reader.read('	team_name - team_note\n')
+        self.assertEqual('team_name', team.name)
+        self.assertEqual('team_note', team.note)
+        self.assertEqual(group, team.group)
+
+        player = self.reader.read('		000000001 - player_surname player_name, 01.01.1900 , player_note\n')
+        self.assertEqual('player_name', player.name)
+        self.assertEqual('player_surname', player.surname)
+        self.assertEqual('01.01.1900', player.date_of_birth)
+        self.assertEqual('000000001', player.registration_number)
+        self.assertEqual('player_note', player.note)
+        self.assertEqual(team, player.team)
+
+
     def test_group_strip_whitespace(self):
         group = self.reader.read('group_name - group_note     \n')
         self.assertEqual('group_name', group.name)
@@ -92,6 +111,22 @@ class TestConvert(TestCase):
             'group_name;group_note\n'
             'group_name;group_note;team_name;team_note\n'
             'group_name;group_note;team_name;team_note;123456789;player_name;player_surname;01.01.1900;'
+            'player_note\n')
+        output_file = io.StringIO(newline=None)
+        convert(input_file, output_file)
+        self.assertEqual(output_expected, output_file.getvalue())
+
+    def test_player_registration_number_as_string(self):
+        input_file = io.StringIO(
+            'group_name - group_note\n' +
+            '	team_name - team_note\n' +
+            '		000000001 - player_surname player_name, 01.01.1900 , player_note\n',
+            newline=None)
+        output_expected = (
+            self.CSV_HEADER +
+            'group_name;group_note\n'
+            'group_name;group_note;team_name;team_note\n'
+            'group_name;group_note;team_name;team_note;000000001;player_name;player_surname;01.01.1900;'
             'player_note\n')
         output_file = io.StringIO(newline=None)
         convert(input_file, output_file)
