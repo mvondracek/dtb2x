@@ -12,8 +12,10 @@ from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
 from typing import List, TextIO, Union
 
+from openpyxl import Workbook
+
 PROGRAM_NAME = 'dtb2csv'
-PROGRAM_DESCRIPTION = 'Simple single-purpose DTB to CSV format converter.'
+PROGRAM_DESCRIPTION = 'Simple single-purpose DTB to CSV or XLSX format converter.'
 __version__ = '0.2.0'
 __author__ = 'Martin Vondracek'
 __email__ = 'vondracek.mar@gmail.com'
@@ -241,6 +243,35 @@ class ConverterCsv(Converter):
                 writer.writerow(entity.to_list())
 
 
+class ConverterXlsx(Converter):
+    @staticmethod
+    def newline() -> Union[str, None]:
+        return None
+
+    @staticmethod
+    def convert(dtb_input: TextIO, xlsx_output: TextIO, strict: bool = True):
+        """
+        :param dtb_input: Input text file in DTB format
+        :param xlsx_output: Output text file in XLSX format.
+        :param strict: Convert using strict mode for reading DTB file and validation of its format. When strict mode is
+            enabled, trying to convert DTB file containing format mistakes raises Exceptions. If strict mode is disabled,
+            the reader tries to tolerate small formatting mistakes like missing spaces and missing commas.
+
+        :raises DtbReader.InvalidDtbFileError: If `line` is not a valid DTB entity, therefore the input file is invalid.
+        """
+        reader = DtbReader()
+        workbook = Workbook()
+        worksheet = workbook.active  # grab the active worksheet
+        worksheet.title = "DTB"
+        # write custom header
+        worksheet.append(Group.header() + Team.header() + Player.header())
+        for line in dtb_input:
+            entity = reader.read(line, strict=strict)  # entity is Group, Team, or Player
+            if entity is not None:
+                worksheet.append(entity.to_list())
+        workbook.save(xlsx_output.name)
+
+
 class Application:
     def __init__(self):
         self.root = tk.Tk()
@@ -301,9 +332,9 @@ class Application:
             initial_directory = ''
 
         output_filepath = tk.filedialog.asksaveasfilename(
-            filetypes=(("CSV files", "*.csv"), ("all files", "*.*")),
-            defaultextension='.csv',
             title='Save file',
+            filetypes=(("XLSX files", "*.xlsx"), ("CSV files", "*.csv"), ("all files", "*.*")),
+            defaultextension='.xlsx',
             initialfile=initial_file,
             initialdir=initial_directory
         )
@@ -331,6 +362,8 @@ class Application:
 
         if output_filepath[-4:] == '.csv':
             converter = ConverterCsv
+        elif output_filepath[-5:] == '.xlsx':
+            converter = ConverterXlsx
         else:
             warning_message = 'Unsupported output file format `{}`.'.format(output_filepath)
             logger.warning(warning_message)
