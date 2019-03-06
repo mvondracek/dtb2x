@@ -79,7 +79,7 @@ class TestConvert(TestCase):
         self.CSV_HEADER = \
             'Název, Oddíl;Poznámka, Oddíl;' \
             'Název, Družstvo;Poznámka, Družstvo;' \
-            'Jméno, Hráč;Příjmení, Hráč;Datum nar., Hráč;Reg. číslo, Hráč;Poznámka, Hráč\n'
+            'Reg. číslo, Hráč;Jméno, Hráč;Příjmení, Hráč;Datum nar., Hráč;Poznámka, Hráč\n'
 
     def test_convert(self):
         input_file = io.StringIO(
