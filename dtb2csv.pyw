@@ -6,6 +6,7 @@ import re
 import sys
 import tkinter as tk
 import warnings
+from abc import ABC, abstractmethod
 from enum import Enum, unique
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
@@ -188,26 +189,56 @@ class DtbReader:
             return 'DtbReader.InvalidDtbFileError({})'.format(self.message)
 
 
-def convert(dtb_input: TextIO, csv_output: TextIO, strict: bool = True):
-    """
-    :param dtb_input: Input text file in DTB format
-    :param csv_output: Output text file in CSV format.
-        CSV file should be opened with <code>newline=''</code>, see https://docs.python.org/3.5/library/csv.html#id3
-    :param strict: Convert using strict mode for reading DTB file and validation of its format. When strict mode is
-        enabled, trying to convert DTB file containing format mistakes raises Exceptions. If strict mode is disabled,
-        the reader tries to tolerate small formatting mistakes like missing spaces and missing commas.
+class Converter(ABC):
+    @staticmethod
+    @abstractmethod
+    def newline() -> Union[str, None]:
+        """
+        Newline parameter for opening output file with `open` call.
+        """
+        pass
 
-    :raises DtbReader.InvalidDtbFileError: If `line` is not a valid DTB entity, therefore the input file is invalid.
-    """
-    reader = DtbReader()
-    # NOTE MV: Microsoft Excel expects delimiter based on regional settings
-    writer = csv.writer(csv_output, dialect=csv.excel, delimiter=';')
-    # write custom CSV header
-    writer.writerow(Group.header() + Team.header() + Player.header())
-    for line in dtb_input:
-        entity = reader.read(line, strict=strict)  # entity is Group, Team, or Player
-        if entity is not None:
-            writer.writerow(entity.to_list())
+    @staticmethod
+    @abstractmethod
+    def convert(input: TextIO, output: TextIO, strict: bool = True):
+        """
+        :param input: Input text file in DTB format
+        :param output: Output text file.
+        :param strict: Convert using strict mode for reading DTB file and validation of its format. When strict mode is
+            enabled, trying to convert DTB file containing format mistakes raises Exceptions. If strict mode is disabled,
+            the reader tries to tolerate small formatting mistakes like missing spaces and missing commas.
+
+        :raises DtbReader.InvalidDtbFileError: If `line` is not a valid DTB entity, therefore the input file is invalid.
+        """
+        pass
+
+
+class ConverterCsv(Converter):
+    @staticmethod
+    def newline() -> Union[str, None]:
+        return ''
+
+    @staticmethod
+    def convert(dtb_input: TextIO, csv_output: TextIO, strict: bool = True):
+        """
+        :param dtb_input: Input text file in DTB format
+        :param csv_output: Output text file in CSV format.
+            CSV file should be opened with <code>newline=''</code>, see https://docs.python.org/3.5/library/csv.html#id3
+        :param strict: Convert using strict mode for reading DTB file and validation of its format. When strict mode is
+            enabled, trying to convert DTB file containing format mistakes raises Exceptions. If strict mode is disabled,
+            the reader tries to tolerate small formatting mistakes like missing spaces and missing commas.
+
+        :raises DtbReader.InvalidDtbFileError: If `line` is not a valid DTB entity, therefore the input file is invalid.
+        """
+        reader = DtbReader()
+        # NOTE MV: Microsoft Excel expects delimiter based on regional settings
+        writer = csv.writer(csv_output, dialect=csv.excel, delimiter=';')
+        # write custom CSV header
+        writer.writerow(Group.header() + Team.header() + Player.header())
+        for line in dtb_input:
+            entity = reader.read(line, strict=strict)  # entity is Group, Team, or Player
+            if entity is not None:
+                writer.writerow(entity.to_list())
 
 
 class Application:
@@ -260,7 +291,7 @@ class Application:
         logger.debug('Selected input DTB filepath `{}`'.format(input_filepath))
         self.input_dtb_filepath.set(input_filepath)
 
-    def ask_output_csv_filepath(self):
+    def ask_output_filepath(self):
         input_filepath = self.input_dtb_filepath.get()
         if input_filepath:
             initial_file = os.path.splitext(os.path.basename(input_filepath))[0]
@@ -270,13 +301,13 @@ class Application:
             initial_directory = ''
 
         output_filepath = tk.filedialog.asksaveasfilename(
-            title='Save CSV file',
             filetypes=(("CSV files", "*.csv"), ("all files", "*.*")),
             defaultextension='.csv',
+            title='Save file',
             initialfile=initial_file,
             initialdir=initial_directory
         )
-        logger.debug('Selected output CSV filepath `{}`'.format(output_filepath))
+        logger.debug('Selected output filepath `{}`'.format(output_filepath))
         self.output_csv_filepath.set(output_filepath)
 
     def convert(self):
@@ -293,20 +324,28 @@ class Application:
             return
 
         # output file
-        self.ask_output_csv_filepath()
+        self.ask_output_filepath()
         output_filepath = self.output_csv_filepath.get()
         if not output_filepath:
             return  # user canceled `asksaveasfilename` dialog
 
+        if output_filepath[-4:] == '.csv':
+            converter = ConverterCsv
+        else:
+            warning_message = 'Unsupported output file format `{}`.'.format(output_filepath)
+            logger.warning(warning_message)
+            tk.messagebox.showwarning("OK", warning_message)
+            return
         try:
             with open(input_filepath, mode='r') as dtb_file, \
-                    open(output_filepath, mode='w', newline='') as csv_file:
+                    open(output_filepath, mode='w', newline=converter.newline()) as output_file:
                 # NOTE: CSV file is opened with `newline=''` to prevent line ends in form `\r\r\n`
                 # see https://docs.python.org/3.5/library/csv.html#id3
                 strict = self.dtb_strict_mode.get()
-                logger.info('Conversion started. input DTB = `{}`, output CSV = `{}`, strict = {}'
+                logger.info('Conversion started. input DTB = `{}`, output = `{}`, strict = {}'
                             .format(input_filepath, output_filepath, strict))
-                convert(dtb_file, csv_file, strict=strict)
+                converter.convert(dtb_file, output_file, strict=strict)
+
 
         except FileNotFoundError as e:
             logger.error(e)
@@ -325,7 +364,7 @@ class Application:
                 message += '\n\nTry again without DTB strict mode.'
             tk.messagebox.showerror("Error", message)
         else:
-            message = 'Conversion finished! CSV file saved to `{}`.'.format(self.output_csv_filepath.get())
+            message = 'Conversion finished! File saved to `{}`.'.format(self.output_csv_filepath.get())
             logger.info(message)
             tk.messagebox.showinfo('Success', message)
 

@@ -1,7 +1,7 @@
 import io
 from unittest import TestCase
 
-from dtb2csv import DtbReader, convert
+from dtb2csv import DtbReader, ConverterCsv
 
 
 class TestDtbReader(TestCase):
@@ -93,7 +93,7 @@ class TestDtbReader(TestCase):
         self.assertEqual(team_2.group, group)
 
 
-class TestConvert(TestCase):
+class TestConverterCsv(TestCase):
     def setUp(self):
         self.CSV_HEADER = \
             'Název, Oddíl;Poznámka, Oddíl;' \
@@ -113,7 +113,7 @@ class TestConvert(TestCase):
             'group_name;group_note;team_name;team_note;123456789;player_name;player_surname;01.01.1900;'
             'player_note\n')
         output_file = io.StringIO(newline=None)
-        convert(input_file, output_file)
+        ConverterCsv.convert(input_file, output_file)
         self.assertEqual(output_expected, output_file.getvalue())
 
     def test_player_registration_number_as_string(self):
@@ -129,7 +129,7 @@ class TestConvert(TestCase):
             'group_name;group_note;team_name;team_note;000000001;player_name;player_surname;01.01.1900;'
             'player_note\n')
         output_file = io.StringIO(newline=None)
-        convert(input_file, output_file)
+        ConverterCsv.convert(input_file, output_file)
         self.assertEqual(output_expected, output_file.getvalue())
 
     def test_loose_no_strict(self):
@@ -150,7 +150,7 @@ class TestConvert(TestCase):
             'group_name;;team_name;;;player_name3;player_surname3;;\n'
             'group_name;;team_name;;;player_name4;player_surname4;;\n')
         output_file = io.StringIO(newline=None)
-        convert(input_file, output_file, strict=False)
+        ConverterCsv.convert(input_file, output_file, strict=False)
         self.assertEqual(output_expected, output_file.getvalue())
 
     def test_basic_surname(self):
@@ -165,7 +165,7 @@ class TestConvert(TestCase):
             'group_name;;team_name;\n'
             'group_name;;team_name;;;player_name;;;\n')
         output_file = io.StringIO(newline=None)
-        convert(input_file, output_file)
+        ConverterCsv.convert(input_file, output_file)
         self.assertEqual(output_expected, output_file.getvalue())
 
     def test_basic_surname_name(self):
@@ -180,7 +180,7 @@ class TestConvert(TestCase):
             'group_name;;team_name;\n'
             'group_name;;team_name;;;player_name;player_surname;;\n')
         output_file = io.StringIO(newline=None)
-        convert(input_file, output_file)
+        ConverterCsv.convert(input_file, output_file)
         self.assertEqual(output_expected, output_file.getvalue())
 
     def test_basic_name(self):
@@ -195,7 +195,7 @@ class TestConvert(TestCase):
             'group_name;;team_name;\n'
             'group_name;;team_name;;;player_name;;;\n')
         output_file = io.StringIO(newline=None)
-        convert(input_file, output_file)
+        ConverterCsv.convert(input_file, output_file)
         self.assertEqual(output_expected, output_file.getvalue())
 
     def test_empty(self):
@@ -210,7 +210,7 @@ class TestConvert(TestCase):
             ';;;\n'
             ';;;;;;;;\n')
         output_file = io.StringIO(newline=None)
-        convert(input_file, output_file)
+        ConverterCsv.convert(input_file, output_file)
         self.assertEqual(output_expected, output_file.getvalue())
 
     def test_partial(self):
@@ -231,7 +231,7 @@ class TestConvert(TestCase):
             'group3;group_note;team3;team_note\n'
             'group3;group_note;team3;team_note;123456789;player_name;player_surname;01.01.2000;player_note\n')
         output_file = io.StringIO(newline=None)
-        convert(input_file, output_file)
+        ConverterCsv.convert(input_file, output_file)
         self.assertEqual(output_expected, output_file.getvalue())
 
     def test_full(self):
@@ -246,7 +246,7 @@ class TestConvert(TestCase):
             'group_name;group_note;team_name;team_note\n'
             'group_name;group_note;team_name;team_note;123456789;player_name;player_surname;01.01.2000;player_note\n')
         output_file = io.StringIO(newline=None)
-        convert(input_file, output_file)
+        ConverterCsv.convert(input_file, output_file)
         self.assertEqual(output_expected, output_file.getvalue())
 
     def test_invalid_file_team_wo_group(self):
@@ -258,7 +258,7 @@ class TestConvert(TestCase):
             newline=None)
         output_file = io.StringIO(newline=None)
         with self.assertRaises(DtbReader.InvalidDtbFileError):
-            convert(input_file, output_file)
+            ConverterCsv.convert(input_file, output_file)
 
     def test_invalid_file_player_wo_team_and_group(self):
         input_file = io.StringIO(
@@ -269,7 +269,7 @@ class TestConvert(TestCase):
             newline=None)
         output_file = io.StringIO(newline=None)
         with self.assertRaises(DtbReader.InvalidDtbFileError):
-            convert(input_file, output_file)
+            ConverterCsv.convert(input_file, output_file)
 
     def test_invalid_file_player_wo_team(self):
         input_file = io.StringIO(
@@ -278,5 +278,5 @@ class TestConvert(TestCase):
             newline=None)
         output_file = io.StringIO(newline=None)
         with self.assertRaises(DtbReader.InvalidDtbFileError):
-            convert(input_file, output_file)
+            ConverterCsv.convert(input_file, output_file)
 
