@@ -1,6 +1,6 @@
 """
 dtb2x
-Simple and and easy to use DTB to XLSX (and CSV) format converter.
+Simple and easy to use DTB to XLSX (and CSV) format converter.
 Martin Vondracek <vondracek.mar@gmail.com>
 2019
 """
@@ -25,7 +25,7 @@ class Dtb2CsvError(Exception):
 
 
 class Group:
-    """Group contains teams. Group is a top level record in DTB file. """
+    """Group contains teams. Group is a top-level record in DTB file. """
 
     def __init__(self, name: str, note: str):
         self.name = name

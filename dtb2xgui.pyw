@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 """
 dtb2x
-Simple and and easy to use DTB to XLSX (and CSV) format converter.
+Simple and easy to use DTB to XLSX (and CSV) format converter.
 Martin Vondracek <vondracek.mar@gmail.com>
 2019
 """
@@ -18,7 +18,7 @@ from tkinter.messagebox import showerror
 import dtb2x
 
 PROGRAM_NAME = 'dtb2x'
-PROGRAM_DESCRIPTION = 'Simple and and easy to use DTB to XLSX (and CSV) format converter.'
+PROGRAM_DESCRIPTION = 'Simple and easy to use DTB to XLSX (and CSV) format converter.'
 __version__ = '0.2.0'
 __author__ = 'Martin Vondracek'
 __email__ = 'vondracek.mar@gmail.com'

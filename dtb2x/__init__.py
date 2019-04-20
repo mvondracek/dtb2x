@@ -1,6 +1,6 @@
 """
 dtb2x
-Simple and and easy to use DTB to XLSX (and CSV) format converter.
+Simple and easy to use DTB to XLSX (and CSV) format converter.
 Martin Vondracek <vondracek.mar@gmail.com>
 2019
 """
