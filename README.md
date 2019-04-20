@@ -15,6 +15,8 @@ On Windows, run `install.bat` or install requirements from `requirements.txt` us
 
 Double click `dtb2xgui.pyw` or you can also run `python dtb2xgui.pyw` from the command line.
 
+The application saves logs to the `debug.log` file.
+
 ## Conversion process
 
 Input DTB format defines a hierarchy of sports groups, teams, and players. Each team is indented with a single tab `\t`,
