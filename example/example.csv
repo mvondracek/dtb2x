@@ -1,4 +1,4 @@
 Název, Oddíl;Poznámka, Oddíl;Název, Drustvo;Poznámka, Drustvo;Reg. èíslo, Hráè;Jméno, Hráè;Pøíjmení, Hráè;Datum nar., Hráè;Poznámka, Hráè
-group_name;group_note
-group_name;group_note;team_name;team_note
+group_name;group_note;;;;;;;
+group_name;group_note;team_name;team_note;;;;;
 group_name;group_note;team_name;team_note;00001234;player_name;player_surname;01.01.1900;player_note

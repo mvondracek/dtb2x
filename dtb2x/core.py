@@ -223,12 +223,19 @@ class ConverterCsv(Converter):
         reader = DtbReader()
         # NOTE MV: Microsoft Excel expects delimiter based on regional settings
         writer = csv.writer(csv_output, dialect=csv.excel, delimiter=';')
+
         # write custom CSV header
-        writer.writerow(Group.header() + Team.header() + Player.header())
+        header = Group.header() + Team.header() + Player.header()
+        writer.writerow(header)
+
         for line in dtb_input:
             entity = reader.read(line, strict=strict)  # entity is Group, Team, or Player
             if entity is not None:
-                writer.writerow(entity.to_list())
+                csv_line = entity.to_list()
+                # make sure all lines in csv have the same number of columns
+                if len(csv_line) < len(header):
+                    csv_line += [None]*(len(header) - len(csv_line))
+                writer.writerow(csv_line)
 
 
 class ConverterXlsx(Converter):

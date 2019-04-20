@@ -16,9 +16,11 @@ from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
 
 import dtb2x
+from dtb2x.core import ConverterCsv, ConverterXlsx, DtbReader
 
 PROGRAM_NAME = 'dtb2x'
 PROGRAM_DESCRIPTION = 'Simple and easy to use DTB to XLSX (and CSV) format converter.'
+PACKAGE_VERSION = dtb2x.__version__
 __version__ = '0.2.0'
 __author__ = 'Martin Vondracek'
 __email__ = 'vondracek.mar@gmail.com'
@@ -131,9 +133,9 @@ class Application:
             return  # user canceled `asksaveasfilename` dialog
 
         if output_filepath[-4:] == '.csv':
-            converter = dtb2x.core.ConverterCsv
+            converter = ConverterCsv
         elif output_filepath[-5:] == '.xlsx':
-            converter = dtb2x.core.ConverterXlsx
+            converter = ConverterXlsx
         else:
             warning_message = 'Unsupported output file format `{}`.'.format(output_filepath)
             logger.warning(warning_message)
@@ -159,7 +161,7 @@ class Application:
             message = 'Cannot read file.\n\n{}: {}'.format(e.__class__.__name__, str(e))
             logger.error(message)
             tk.messagebox.showerror("Unicode Error", message)
-        except dtb2x.core.DtbReader.InvalidDtbFileError as e:
+        except DtbReader.InvalidDtbFileError as e:
             logger.error(e)
             message = e.message
             if self.dtb_strict_mode:
@@ -176,7 +178,7 @@ class Application:
         tk.messagebox.showinfo('About ' + PROGRAM_NAME,
                                PROGRAM_NAME + '\n' +
                                PROGRAM_DESCRIPTION + '\n\n' +
-                               'GUI v' + __version__ + ', package v' + dtb2x.__version__ + '\n\n' +
+                               'GUI v' + __version__ + ', package v' + PACKAGE_VERSION + '\n\n' +
                                'Author: ' + __author__ + ', ' + __email__ + '\n' +
                                __date__)
 
