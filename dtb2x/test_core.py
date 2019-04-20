@@ -1,7 +1,14 @@
+"""
+dtb2x
+Simple and easy to use DTB to XLSX (and CSV) format converter.
+Martin Vondracek <vondracek.mar@gmail.com>
+2019
+"""
+
 import io
 from unittest import TestCase
 
-from dtb2csv import DtbReader, ConverterCsv
+from .core import DtbReader, ConverterCsv
 
 
 class TestDtbReader(TestCase):
@@ -43,7 +50,6 @@ class TestDtbReader(TestCase):
         self.assertEqual('000000001', player.registration_number)
         self.assertEqual('player_note', player.note)
         self.assertEqual(team, player.team)
-
 
     def test_group_strip_whitespace(self):
         group = self.reader.read('group_name - group_note     \n')
@@ -108,8 +114,8 @@ class TestConverterCsv(TestCase):
             newline=None)
         output_expected = (
             self.CSV_HEADER +
-            'group_name;group_note\n'
-            'group_name;group_note;team_name;team_note\n'
+            'group_name;group_note;;;;;;;\n'
+            'group_name;group_note;team_name;team_note;;;;;\n'
             'group_name;group_note;team_name;team_note;123456789;player_name;player_surname;01.01.1900;'
             'player_note\n')
         output_file = io.StringIO(newline=None)
@@ -124,8 +130,8 @@ class TestConverterCsv(TestCase):
             newline=None)
         output_expected = (
             self.CSV_HEADER +
-            'group_name;group_note\n'
-            'group_name;group_note;team_name;team_note\n'
+            'group_name;group_note;;;;;;;\n'
+            'group_name;group_note;team_name;team_note;;;;;\n'
             'group_name;group_note;team_name;team_note;000000001;player_name;player_surname;01.01.1900;'
             'player_note\n')
         output_file = io.StringIO(newline=None)
@@ -143,8 +149,8 @@ class TestConverterCsv(TestCase):
             newline=None)
         output_expected = (
             self.CSV_HEADER +
-            'group_name;\n'
-            'group_name;;team_name;\n'
+            'group_name;;;;;;;;\n'
+            'group_name;;team_name;;;;;;\n'
             'group_name;;team_name;;123456789;player_name1;player_surname1;01.01.1900;\n'
             'group_name;;team_name;;123456789;player_name2;player_surname2;01.01.1900;\n'
             'group_name;;team_name;;;player_name3;player_surname3;;\n'
@@ -161,8 +167,8 @@ class TestConverterCsv(TestCase):
             newline=None)
         output_expected = (
             self.CSV_HEADER +
-            'group_name;\n'
-            'group_name;;team_name;\n'
+            'group_name;;;;;;;;\n'
+            'group_name;;team_name;;;;;;\n'
             'group_name;;team_name;;;player_name;;;\n')
         output_file = io.StringIO(newline=None)
         ConverterCsv.convert(input_file, output_file)
@@ -176,8 +182,8 @@ class TestConverterCsv(TestCase):
             newline=None)
         output_expected = (
             self.CSV_HEADER +
-            'group_name;\n'
-            'group_name;;team_name;\n'
+            'group_name;;;;;;;;\n'
+            'group_name;;team_name;;;;;;\n'
             'group_name;;team_name;;;player_name;player_surname;;\n')
         output_file = io.StringIO(newline=None)
         ConverterCsv.convert(input_file, output_file)
@@ -191,8 +197,8 @@ class TestConverterCsv(TestCase):
             newline=None)
         output_expected = (
             self.CSV_HEADER +
-            'group_name;\n'
-            'group_name;;team_name;\n'
+            'group_name;;;;;;;;\n'
+            'group_name;;team_name;;;;;;\n'
             'group_name;;team_name;;;player_name;;;\n')
         output_file = io.StringIO(newline=None)
         ConverterCsv.convert(input_file, output_file)
@@ -206,8 +212,8 @@ class TestConverterCsv(TestCase):
             newline=None)
         output_expected = (
             self.CSV_HEADER +
-            ';\n'
-            ';;;\n'
+            ';;;;;;;;\n'
+            ';;;;;;;;\n'
             ';;;;;;;;\n')
         output_file = io.StringIO(newline=None)
         ConverterCsv.convert(input_file, output_file)
@@ -224,11 +230,11 @@ class TestConverterCsv(TestCase):
             newline=None)
         output_expected = (
             self.CSV_HEADER +
-            'group1;group_note\n'
-            'group2;group_note\n'
-            'group2;group_note;team2;team_note\n'
-            'group3;group_note\n'
-            'group3;group_note;team3;team_note\n'
+            'group1;group_note;;;;;;;\n'
+            'group2;group_note;;;;;;;\n'
+            'group2;group_note;team2;team_note;;;;;\n'
+            'group3;group_note;;;;;;;\n'
+            'group3;group_note;team3;team_note;;;;;\n'
             'group3;group_note;team3;team_note;123456789;player_name;player_surname;01.01.2000;player_note\n')
         output_file = io.StringIO(newline=None)
         ConverterCsv.convert(input_file, output_file)
@@ -242,8 +248,8 @@ class TestConverterCsv(TestCase):
             newline=None)
         output_expected = (
             self.CSV_HEADER +
-            'group_name;group_note\n'
-            'group_name;group_note;team_name;team_note\n'
+            'group_name;group_note;;;;;;;\n'
+            'group_name;group_note;team_name;team_note;;;;;\n'
             'group_name;group_note;team_name;team_note;123456789;player_name;player_surname;01.01.2000;player_note\n')
         output_file = io.StringIO(newline=None)
         ConverterCsv.convert(input_file, output_file)
@@ -279,4 +285,3 @@ class TestConverterCsv(TestCase):
         output_file = io.StringIO(newline=None)
         with self.assertRaises(DtbReader.InvalidDtbFileError):
             ConverterCsv.convert(input_file, output_file)
-
