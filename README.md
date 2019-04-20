@@ -25,6 +25,8 @@ Each player belongs to a single team. Please see `dtb2x.core.DtbReader` for a sp
 
 Example files are in `example` directory.
 
+### DTB input
+
 ~~~
 group_name - group_note
 	team_name - team_note
@@ -32,13 +34,7 @@ group_name - group_note
 ~~~
 *Listing: Example input DTB file.*
 
-~~~
-Název, Oddíl;Poznámka, Oddíl;Název, Družstvo;Poznámka, Družstvo;Reg. číslo, Hráč;Jméno, Hráč;Příjmení, Hráč;Datum nar., Hráč;Poznámka, Hráč
-group_name;group_note
-group_name;group_note;team_name;team_note
-group_name;group_note;team_name;team_note;00001234;player_name;player_surname;01.01.1900;player_note
-~~~
-*Listing: Corresponding CSV file, including table header in Czech.*
+### XLSX output
 
 *Table: Corresponding XLSX table, including table header in Czech.*
 
@@ -47,6 +43,20 @@ group_name;group_note;team_name;team_note;00001234;player_name;player_surname;01
 |group_name|group_note|							
 |group_name|group_note|team_name|team_note|					
 |group_name|group_note|team_name|team_note|00001234|player_name|player_surname|01.01.1900|player_note|
+
+### CSV output
+
+Microsoft Excel expects delimiter in CSV files based on regional settings, `;` is used here. We also use usual
+properties of an Excel-generated CSV file as defined in
+[csv.excel](https://docs.python.org/3.7/library/csv.html#csv.excel).
+
+~~~
+Název, Oddíl;Poznámka, Oddíl;Název, Družstvo;Poznámka, Družstvo;Reg. číslo, Hráč;Jméno, Hráč;Příjmení, Hráč;Datum nar., Hráč;Poznámka, Hráč
+group_name;group_note;;;;;;;
+group_name;group_note;team_name;team_note;;;;;
+group_name;group_note;team_name;team_note;00001234;player_name;player_surname;01.01.1900;player_note
+~~~
+*Listing: Corresponding CSV file, including table header in Czech.*
 
 ## Strict mode
 Convert DTB files to CSV using strict mode for reading DTB file and validation of its format. When strict mode is
