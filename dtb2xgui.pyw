@@ -21,10 +21,10 @@ from dtb2x.core import ConverterCsv, ConverterXlsx, DtbReader
 PROGRAM_NAME = 'dtb2x'
 PROGRAM_DESCRIPTION = 'Simple and easy to use DTB to XLSX (and CSV) format converter.'
 PACKAGE_VERSION = dtb2x.__version__
-__version__ = '0.2.0'
 __author__ = 'Martin Vondracek'
 __email__ = 'vondracek.mar@gmail.com'
-__date__ = '2019-02-27'
+__version__ = '0.3.0'
+__date__ = '2019-04-21'
 
 logger = logging.getLogger(__name__)
 
