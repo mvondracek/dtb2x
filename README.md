@@ -9,7 +9,7 @@ Simple and easy to use DTB to XLSX (and CSV) format converter.
 
 # Installation
 
-On Windows run `install.bat`, or install requirements from `requirements.txt` using `pip`.
+On Windows, run `install.bat`, or install requirements from `requirements.txt` using `pip`.
 
 # Run
 
