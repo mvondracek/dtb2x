@@ -1,7 +1,14 @@
+"""
+dtb2x
+Simple and and easy to use DTB to XLSX (and CSV) format converter.
+Martin Vondracek <vondracek.mar@gmail.com>
+2019
+"""
+
 import io
 from unittest import TestCase
 
-from dtb2csv import DtbReader, ConverterCsv
+from .core import DtbReader, ConverterCsv
 
 
 class TestDtbReader(TestCase):
@@ -43,7 +50,6 @@ class TestDtbReader(TestCase):
         self.assertEqual('000000001', player.registration_number)
         self.assertEqual('player_note', player.note)
         self.assertEqual(team, player.team)
-
 
     def test_group_strip_whitespace(self):
         group = self.reader.read('group_name - group_note     \n')
@@ -279,4 +285,3 @@ class TestConverterCsv(TestCase):
         output_file = io.StringIO(newline=None)
         with self.assertRaises(DtbReader.InvalidDtbFileError):
             ConverterCsv.convert(input_file, output_file)
-
