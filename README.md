@@ -9,11 +9,11 @@ Simple and easy to use DTB to XLSX (and CSV) format converter.
 
 # Installation
 
-On Windows, run `install.bat` or install requirements from `requirements.txt` using `pip`.
+On Windows, **double click** `install.bat` or install requirements from `requirements.txt` using `pip`.
 
 # Run
 
-Double click `dtb2xgui.pyw` or you can also run `python dtb2xgui.pyw` from the command line.
+**Double click** `dtb2xgui.pyw` or you can also run `python dtb2xgui.pyw` from the command line.
 
 The application saves logs to the `debug.log` file.
 

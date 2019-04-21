@@ -23,7 +23,7 @@ PROGRAM_DESCRIPTION = 'Simple and easy to use DTB to XLSX (and CSV) format conve
 PACKAGE_VERSION = dtb2x.__version__
 __author__ = 'Martin Vondracek'
 __email__ = 'vondracek.mar@gmail.com'
-__version__ = '0.3.0'
+__version__ = '0.3.1'
 __date__ = '2019-04-21'
 
 logger = logging.getLogger(__name__)
